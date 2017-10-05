@@ -81,7 +81,16 @@ class MenuSection
 
     public function getItems()
     {
-        return $this->items;
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('isDeleted', false));
+        return $this->items->matching($criteria);
+    }
+
+    /**
+     * @param mixed $items
+     */
+    public function setItems($items)
+    {
+        $this->items = $items;
     }
 
     public function addItem(MenuItem $item)
