@@ -82,8 +82,6 @@ trait RestaurantTrait
     protected function editMenuAction($id, Request $request, $layout, array $routes)
     {
         $em = $this->getDoctrine()->getManagerForClass('AppBundle:Restaurant');
-        $addMenuSection = $request->attributes->get('_add_menu_section', false);
-        $sectionAdded = null;
 
         $restaurant = $this->getDoctrine()
             ->getRepository('AppBundle:Restaurant')->find($id);
@@ -91,11 +89,6 @@ trait RestaurantTrait
         $this->checkAccess($restaurant);
 
         $menu = $restaurant->getMenu();
-
-        $originalSections = new ArrayCollection();
-        foreach ($menu->getSections() as $section) {
-            $originalSections->add($section);
-        }
 
         $originalItems = new \SplObjectStorage();
         foreach ($menu->getSections() as $section) {
@@ -114,48 +107,10 @@ trait RestaurantTrait
         if ($form->isSubmitted() && $form->isValid()) {
             $menu = $form->getData();
 
-            if ($addMenuSection) {
-                $sectionAdded = $form->get('addSection')->getData();
-                $menu->addSection($sectionAdded);
-
-                $form = $this->createMenuForm($menu, $sectionAdded);
-            } else {
-                foreach ($originalSections as $originalSection) {
-
-                    // Remove deleted sections
-                    // Remove mapping between section & items
-                    if (false === $menu->getSections()->contains($originalSection)) {
-                        foreach ($originalSection->getItems() as $item) {
-                            // Don't remove the item to keep association with OrderItem
-                            $originalSection->getItems()->removeElement($item);
-                            $item->setSection(null);
-                        }
-
-                        $originalSection->setMenu(null);
-                        $em->remove($originalSection);
-                    } else {
-
-                        // Remove mapping between section & deleted item
-                        foreach ($menu->getSections() as $updatedSection) {
-                            if ($updatedSection === $originalSection) {
-                                foreach ($originalItems[$originalSection] as $originalItem) {
-                                    // var_dump('- ITEM : '. $originalItem->getId());
-                                    if (false === $updatedSection->getItems()->contains($originalItem)) {
-                                        $originalSection->getItems()->removeElement($originalItem);
-                                        $originalItem->setSection(null);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Make sure sections & items are mapped
-                foreach ($menu->getSections() as $section) {
-                    foreach ($section->getItems() as $item) {
-                        if (null === $item->getSection()) {
-                            $item->setSection($section);
-                        }
+            foreach ($menu->getSections() as $section) {
+                foreach ($originalItems[$section] as $originalItem) {
+                    if (false === $section->getItems()->contains($originalItem)) {
+                        $originalItem->setIsDeleted(true);
                     }
                 }
             }
@@ -169,16 +124,13 @@ trait RestaurantTrait
                 $this->get('translator')->trans('Your changes were saved.')
             );
 
-            if (!$addMenuSection) {
-                return $this->redirectToRoute($routes['success'], ['id' => $restaurant->getId()]);
-            }
+            return $this->redirectToRoute($routes['success'], ['id' => $restaurant->getId()]);
         }
 
         return [
             'restaurant' => $restaurant,
             'form' => $form->createView(),
             'layout' => $layout,
-            'section_added' => $sectionAdded,
             'restaurants_route' => $routes['restaurants'],
             'restaurant_route' => $routes['restaurant'],
         ];

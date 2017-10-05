@@ -97,41 +97,6 @@ $(function() {
     addForm($target);
   });
 
-  $(document).on('click', '[data-toggle="remove-menu-section"]', function(e) {
-    e.preventDefault();
-
-    var selector = $(e.target).data('target');
-    var $target = $(selector);
-
-    var $copy = $target.detach();
-
-    var data = $form.serialize();
-    enableForm($form, false);
-
-    $.ajax({
-      url : $form.attr('action'),
-      type: $form.attr('method'),
-      data : data
-    })
-    .then(function(html) {
-      enableForm($form, true);
-      $copy.remove();
-      $('#messages').replaceWith(
-        $(html).find('#messages')
-      );
-      $('#menu_sections').replaceWith(
-        $(html).find('#menu_sections')
-      );
-      $('#add-section-wrapper').replaceWith(
-        $(html).find('#add-section-wrapper')
-      );
-      autoDismissMessages();
-    })
-    .catch(function(e) {
-      enableForm($form, true);
-    });
-  });
-
   $(document).on('show.bs.collapse', '[role="tabpanel"] .list-group-item .collapse', function () {
     $(this).closest('.list-group-item').find('.show-description').remove();
   });
