@@ -38,6 +38,17 @@ class MenuItem extends BaseMenuItem
      */
     protected $modifiers;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private $isDeleted = false;
+
+    /**
+     * @Groups({"restaurant"})
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private $isAvailable = false;
+
     public function __construct()
     {
         $this->modifiers = new ArrayCollection();
@@ -53,6 +64,38 @@ class MenuItem extends BaseMenuItem
         $this->section = $section;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * @param mixed $isDeleted
+     */
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsAvailable()
+    {
+        return $this->isAvailable;
+    }
+
+    /**
+     * @param mixed $isUnavailable
+     */
+    public function setIsAvailable($isUnavailable)
+    {
+        $this->isAvailable = $isUnavailable;
     }
 
     /**
