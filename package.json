@@ -68,6 +68,6 @@
     "style-loader": "^0.13.1",
     "webpack": "^3.6.0",
     "webpack-assets-manifest": "^0.6.2",
-    "webpack-dev-server": "^2.8.0"
+    "webpack-dev-server": "^6.0.0"
   }
 }
