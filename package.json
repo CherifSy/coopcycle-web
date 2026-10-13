@@ -28,7 +28,7 @@
     "form-data": "^2.1.2",
     "js-yaml": "^3.7.0",
     "json-loader": "^0.5.4",
-    "jsonwebtoken": "^7.1.9",
+    "jsonwebtoken": "^9.0.3",
     "leaflet": "^1.0.2",
     "leaflet-providers": "^1.1.16",
     "locutus": "^2.0.6",
